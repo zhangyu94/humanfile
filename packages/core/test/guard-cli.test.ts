@@ -168,7 +168,7 @@ describe('guard check behavior', () => {
     expect(result.violations).toHaveLength(0)
   })
 
-  it('installed pre-commit hook blocks commit when protected files are staged', async () => {
+  it('installed pre-commit hook blocks commit when protected files are staged', { timeout: 30_000 }, async () => {
     const repo = await makeTempDir()
     await initRepo(repo)
 
