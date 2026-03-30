@@ -1,0 +1,2 @@
+# The dist folder should be committed so that the action can be used in a workflow
+!/dist

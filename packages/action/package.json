@@ -11,7 +11,8 @@
     "pretest": "pnpm --filter humanfile build",
     "test": "vitest",
     "lint": "eslint .",
-    "release": "bumpp package.json --tag action-v%s --commit \"release(action): v%s\"",
+    "prerelease": "pnpm build",
+    "release": "bumpp package.json --tag action-v%s --commit \"release(action): v%s\" --all",
     "up": "taze major -I"
   },
   "dependencies": {
