@@ -10,7 +10,7 @@
 > This repository is still under active development and is not fully tested yet.
 > Expect breaking changes and rough edges.
 
-`.human` files let you declare where a human stays in the loop, using familiar `.gitignore`-style patterns. Agents can move quickly on `free` paths, must ask on `confirm` paths, and must not edit `readonly` paths.
+`.human` files let you declare where a human stays in the loop, using familiar `.gitignore`-style patterns. Coding agents can move quickly on `free` paths, must ask on `confirm` paths, and must not edit `readonly` paths.
 
 ## Why?
 
@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: zhangyu94/humanfile/packages/action@action-v1
+      - uses: zhangyu94/humanfile/packages/action@action-v0.1.2
         with:
           ai-threshold: 1000
           fail-on-readonly: true

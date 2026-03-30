@@ -35,7 +35,7 @@ jobs:
       - run: pnpm --filter humanfile build
 
       - name: Check .human boundaries
-        uses: zhangyu94/humanfile/packages/action@action-v1
+        uses: zhangyu94/humanfile/packages/action@action-v0.1.2
 ```
 
 ## Monorepo Action Reference
@@ -44,7 +44,7 @@ This action is shipped from a subpath in the monorepo, so workflow references
 must include the package path:
 
 ```yaml
-uses: zhangyu94/humanfile/packages/action@action-v1
+uses: zhangyu94/humanfile/packages/action@action-v0.1.2
 ```
 
 Why `action-v1` instead of `v1`:
@@ -89,7 +89,7 @@ Strict mode (fail on readonly violations):
 
 ```yaml
 - name: Check .human boundaries (strict)
-  uses: zhangyu94/humanfile/packages/action@action-v1
+  uses: zhangyu94/humanfile/packages/action@action-v0.1.2
   with:
     ai-threshold: 800
     fail-on-readonly: true
@@ -99,7 +99,7 @@ Permissive mode (warn via comment, do not fail readonly):
 
 ```yaml
 - name: Check .human boundaries (permissive)
-  uses: zhangyu94/humanfile/packages/action@action-v1
+  uses: zhangyu94/humanfile/packages/action@action-v0.1.2
   with:
     ai-threshold: 1500
     fail-on-readonly: false
@@ -109,7 +109,7 @@ Log-only mode (no PR comment writes):
 
 ```yaml
 - name: Check .human boundaries (log-only)
-  uses: zhangyu94/humanfile/packages/action@action-v1
+  uses: zhangyu94/humanfile/packages/action@action-v0.1.2
   with:
     comment-on-pr: false
 ```
