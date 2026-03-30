@@ -7,35 +7,22 @@ GitHub Action for detecting modifications to `.human`-protected files in pull re
 Prerequisites:
 - Repository contains at least one `.human` file.
 - Workflow runs on `pull_request`.
-- Checkout and Node/pnpm setup are available in the job.
 
 ```yaml
 name: humanfile
-
-on:
-  pull_request:
-    branches: [main]
-
+on: [pull_request]
 permissions:
   contents: read
   pull-requests: write
-
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: zhangyu94/humanfile/packages/action@action-v0.1.3
         with:
-          node-version: 22
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter humanfile build
-
-      - name: Check .human boundaries
-        uses: zhangyu94/humanfile/packages/action@action-v0.1.3
+          ai-threshold: 1000
+          fail-on-readonly: true
 ```
 
 ## Monorepo Action Reference
@@ -53,8 +40,7 @@ Why `action-v1` instead of `v1`:
 - Scoped action tags (`action-v*`) avoid that collision.
 
 Tag notes:
-- `@action-v1` is a moving major alias for compatible action updates.
-- Use immutable tags such as `@action-v1.2.0` or a full commit SHA for stricter reproducibility.
+- Use an immutable tag such as `@action-v0.1.3` or a full commit SHA for reproducibility.
 
 ## Required Permissions
 
@@ -147,8 +133,6 @@ Log-only mode (no PR comment writes):
   Ensure your workflow has `pull-requests: write` permission, `comment-on-pr` is `true`, and the workflow runs on a PR event.
 - Action skips with "No .human files found":
   Add `.human` to the repository root or a nested directory included in checkout.
-- Build fails with missing `humanfile` dependency:
-  Run `pnpm --filter humanfile build` before building the action (the action bundles `humanfile` as a dependency).
 - Unexpected readonly failures:
   Validate `.human` precedence rules (last match wins, deeper scope overrides).
 - AI-likelihood feels too sensitive:
