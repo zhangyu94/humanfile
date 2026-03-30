@@ -7,6 +7,11 @@ import { classify } from './classifier'
 import { parse } from './parser'
 
 const HUMAN_FILENAME = '.human'
+const BACKSLASH_RE = /\\/g
+
+function toPosix(p: string): string {
+  return p.replace(BACKSLASH_RE, '/')
+}
 
 /**
  * Build an ignore filter from the root `.gitignore` (if present).
@@ -43,7 +48,7 @@ async function walkRepo(repoRoot: string): Promise<WalkResult> {
     const entries = await readdir(dir, { withFileTypes: true })
 
     for (const entry of entries) {
-      const rel = relative(repoRoot, join(dir, entry.name))
+      const rel = toPosix(relative(repoRoot, join(dir, entry.name)))
       if (ig.ignores(entry.isDirectory() ? `${rel}/` : rel))
         continue
 
@@ -54,7 +59,7 @@ async function walkRepo(repoRoot: string): Promise<WalkResult> {
       }
       else if (entry.name === HUMAN_FILENAME) {
         const content = await readFile(fullPath, 'utf-8')
-        const directory = relative(repoRoot, dirname(fullPath))
+        const directory = toPosix(relative(repoRoot, dirname(fullPath)))
         ruleSets.push(parse(content, directory))
       }
       else {

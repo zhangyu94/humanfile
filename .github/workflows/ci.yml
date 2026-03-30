@@ -24,12 +24,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build workspace
+        run: pnpm build
       - name: Lint
         run: pnpm lint
       - name: Type check
         run: pnpm typecheck
-      - name: Build workspace
-        run: pnpm build
       - name: Verify generated configs are in sync
         run: pnpm --filter humanfile configs:check-sync
 

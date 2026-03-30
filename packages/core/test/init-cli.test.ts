@@ -1,6 +1,6 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { initCommand } from '../src/cli/init.js'
 
@@ -13,9 +13,7 @@ async function makeTempDir(...files: string[]): Promise<string> {
   tempDirs.push(dir)
   for (const file of files) {
     const full = join(dir, file)
-    const parent = full.substring(0, full.lastIndexOf('/'))
-    const { mkdir } = await import('node:fs/promises')
-    await mkdir(parent, { recursive: true })
+    await mkdir(dirname(full), { recursive: true })
     await writeFile(full, '', 'utf-8')
   }
   return dir

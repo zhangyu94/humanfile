@@ -104,7 +104,7 @@ describe('buildEnvironmentChoices', () => {
 describe('resolveBundledConfigRoot', () => {
   it('resolves to existing bundled config directory', () => {
     const root = resolveBundledConfigRoot()
-    expect(root).toContain('configs/generated')
+    expect(root).toMatch(/configs[/\\]generated/)
   })
 })
 
