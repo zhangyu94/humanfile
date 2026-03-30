@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: zhangyu94/humanfile/packages/action@action-v0.1.2
+      - uses: zhangyu94/humanfile/packages/action@action-v0.1.3
         with:
           ai-threshold: 1000
           fail-on-readonly: true
