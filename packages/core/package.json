@@ -1,0 +1,72 @@
+{
+  "name": "humanfile",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Parse .human files and classify file protection levels for AI coding agents",
+  "author": "Yu Zhang",
+  "license": "MIT",
+  "homepage": "https://github.com/zhangyu94/humanfile#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhangyu94/humanfile.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/zhangyu94/humanfile/issues"
+  },
+  "keywords": [
+    "human",
+    "ai",
+    "coding",
+    "agent",
+    "ai-agent-guardrails",
+    "gitignore",
+    "ownership",
+    "ownership-boundaries",
+    "governance",
+    "policy-as-code"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "humanfile": "./dist/cli.mjs"
+  },
+  "files": [
+    "configs/generated",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest",
+    "lint": "eslint .",
+    "release": "bumpp package.json --tag v%s --commit \"release(core): v%s\"",
+    "up": "taze major -I",
+    "humanfile": "tsx src/cli.ts",
+    "configs:build": "tsx configs/build.ts",
+    "configs:check-sync": "tsx configs/check-sync.ts",
+    "bench": "tsx test/bench/classify.bench.ts",
+    "qa:prepare-suite": "tsx scripts/create-manual-qa-suite.ts"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.3.2",
+    "citty": "^0.2.1",
+    "ignore": "^7.0.5",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "bumpp": "^11.0.1",
+    "tsdown": "^0.21.6",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2"
+  }
+}

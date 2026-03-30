@@ -1,0 +1,11 @@
+catalogMode: prefer
+ignoreWorkspaceRootCheck: true
+shellEmulator: true
+trustPolicy: no-downgrade
+
+packages:
+  - 'packages/*'
+
+onlyBuiltDependencies:
+  - esbuild
+  - simple-git-hooks

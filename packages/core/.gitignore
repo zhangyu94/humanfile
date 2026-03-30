@@ -1,0 +1,9 @@
+# Generated manual QA suite (ignore by default)
+humanfile-ide-qa-suite/
+
+# Allow versioning the QA results report only
+!humanfile-ide-qa-suite/
+humanfile-ide-qa-suite/*
+!humanfile-ide-qa-suite/instructions/
+humanfile-ide-qa-suite/instructions/*
+!humanfile-ide-qa-suite/instructions/results.md

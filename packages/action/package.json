@@ -1,0 +1,29 @@
+{
+  "name": "@humanfile/action",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GitHub Action to review PRs against .human file boundaries",
+  "license": "MIT",
+  "main": "./dist/main.mjs",
+  "scripts": {
+    "build": "tsdown",
+    "pretest": "pnpm --filter humanfile build",
+    "test": "vitest",
+    "lint": "eslint .",
+    "release": "bumpp package.json --tag action-v%s --commit \"release(action): v%s\"",
+    "up": "taze major -I"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.0",
+    "@actions/github": "^9.0.0",
+    "humanfile": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "bumpp": "^11.0.1",
+    "tsdown": "^0.21.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2"
+  }
+}

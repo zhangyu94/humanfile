@@ -1,0 +1,6 @@
+# Coding agents should not edit:
+!LICENSE
+!CODE_OF_CONDUCT.md
+
+# Coding agents should request for human confirmation:
+docs/specs/

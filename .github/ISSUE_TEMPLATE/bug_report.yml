@@ -1,0 +1,86 @@
+name: Bug Report
+description: Report a bug in humanfile
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: human-file
+    attributes:
+      label: .human file content
+      description: The content of your .human file (if relevant).
+      render: text
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Provide exact, numbered steps so maintainers can reproduce the issue quickly.
+      placeholder: |
+        1. Run command ...
+        2. Use this .human file ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Core library (humanfile)
+        - CLI (humanfile check/explain/guard/init/install/ls)
+        - GitHub Action
+        - Cursor rule / Agent skill
+        - Documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      description: Include OS, shell, Node.js version, pnpm version, and whether this runs locally or in CI.
+      placeholder: |
+        OS: macOS 15.4
+        Shell: zsh
+        Node.js: 22.x
+        pnpm: 10.x
+        Context: local repo / GitHub Actions
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `npx humanfile --version` or package version
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs and error output
+      description: Paste the exact error output, stack traces, or CI logs.
+      render: text

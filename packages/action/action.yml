@@ -1,0 +1,29 @@
+name: humanfile
+description: Review PRs against .human file boundaries — detect when protected files are modified by AI agents
+author: Yu Zhang
+
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  ai-threshold:
+    description: Total lines-changed threshold to flag a PR as likely AI-generated
+    required: false
+    default: '1000'
+  fail-on-readonly:
+    description: Fail the check when readonly files are modified
+    required: false
+    default: 'true'
+  comment-on-pr:
+    description: Post/update pull request comments (set to false for log-only mode)
+    required: false
+    default: 'true'
+  github-token:
+    description: GitHub token for API access
+    required: false
+    default: '${{ github.token }}'
+
+runs:
+  using: node20
+  main: dist/main.mjs

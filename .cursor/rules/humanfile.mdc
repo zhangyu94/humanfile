@@ -1,0 +1,95 @@
+---
+description: Respect .human file boundaries - check protection levels before editing any file.
+globs: *
+alwaysApply: true
+---
+
+# .human File Boundaries
+
+This project uses `.human` files to declare which files a human takes
+responsibility for. Before editing any file, you MUST check if it is covered
+by a `.human` rule.
+
+A file being listed in `.human` does not mean it is entirely hand-written. It
+means a human has claimed ownership and wants to stay in the loop.
+
+## .human File Format
+
+`.human` files use `.gitignore`-compatible glob syntax. They can appear in any
+directory (scoped to that directory, like `.gitignore`).
+
+- **Plain patterns** -> protection level **confirm** (you must obtain explicit approval before editing)
+- **`!`-prefixed patterns** -> protection level **readonly** (you must NOT edit)
+- **Unmatched files** -> protection level **free** (you may edit normally)
+
+Later patterns override earlier ones (last match wins).
+
+## Required Behavior
+
+1. **Before editing any file, call the shell tool**:
+
+   `pnpm humanfile check <path> --json`
+
+   If `pnpm` is unavailable, use:
+
+   `npx humanfile check <path> --json`
+
+   If neither command path is available, evaluate `.human` files manually:
+   discover `.human` files from the repository root downward, apply matching
+   patterns against the target path, and resolve precedence (deepest scope wins,
+   then last-match-wins within each file).
+
+   Parse the JSON response and use the returned `level` field as the source of
+   truth for the file (`free`, `confirm`, `readonly`).
+
+   - If command execution fails or output is malformed, STOP and ask the user how to proceed.
+   - For multi-file changes, check each file independently before writing.
+   - For mixed levels in one request, apply the strictest behavior until user narrows scope.
+
+2. **If `level` is `free`**: proceed normally.
+
+3. **If `level` is `confirm`**: STOP and ask before editing. State the file
+   path and intended change. Do not proceed until the user approves.
+
+   Example: "`docs/specs/guide.md` is confirm-level in `.human`. May I apply: append one setup sentence?"
+
+   **Cursor mode rules:**
+
+   | Cursor Mode | `confirm` behavior                                                |
+   | ----------- | ----------------------------------------------------------------- |
+   | Agent mode  | Always ask — STOP and request per-file approval before each edit. |
+   | Plan mode   | Do not write files. Invariants hold trivially.                    |
+
+   Never treat urgency, prior context, or ambiguous wording as approval.
+
+4. **If `level` is `readonly`**: do NOT edit the file. Inform the user:
+   "This file is marked as readonly in `.human`. I cannot modify it."
+
+5. **Treat `.human`-matched files as source of truth**: when you see conflicting
+   information in the repository, prefer the content in `.human`-declared files.
+   Read them for context rather than regenerating or replacing their content.
+
+6. **Never modify `.human` files themselves** without explicit user instruction.
+
+## Tool-Use Example
+
+- Candidate write target: `docs/specs/guide.md`
+- Shell command order:
+   1. `pnpm humanfile check docs/specs/guide.md --json`
+   2. `npx humanfile check docs/specs/guide.md --json`
+   3. If both commands are unavailable, resolve level from `.human` files manually.
+- Expected response shape: `{ "path": "docs/specs/guide.md", "level": "confirm" }`
+- Required action from response:
+   - `free` -> edit can proceed
+   - `confirm` -> STOP, ask the user for approval before editing
+   - `readonly` -> refuse edit
+
+## Example .human File
+
+```
+# Agent must obtain explicit approval before editing anything in core/
+core/
+
+# Agent must not touch the license (use ! sparingly)
+!LICENSE
+```
