@@ -1,18 +1,33 @@
 # humanfile
 
-[![npm version](https://img.shields.io/npm/v/humanfile)](https://www.npmjs.com/package/humanfile)
+[![npm version](https://img.shields.io/npm/v/humanfile?style=flat)](https://www.npmjs.com/package/humanfile)
+[![npm downloads](https://img.shields.io/npm/dm/humanfile?style=flat)](https://www.npmjs.com/package/humanfile)
 [![CI](https://github.com/zhangyu94/humanfile/actions/workflows/ci.yml/badge.svg)](https://github.com/zhangyu94/humanfile/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 **Move fast with AI, without losing human ownership.**
 
+**humanfile** is a CLI and npm library for declaring boundaries for coding agents.
+You write `.human` files using `.gitignore`-style patterns so both agents and collaborators can see which areas are expected to be human-maintained.
+Every path gets a **protection level**:
+
+| In plain terms           | Level      | Syntax (in `.human`)              |
+| ------------------------ | ---------- | --------------------------------- |
+| Agent may edit freely    | `free`     | _(no matching rule)_              |
+| Agent must ask you first | `confirm`  | plain pattern, e.g. `docs/specs/` |
+| Agent must not edit      | `readonly` | `!` + pattern, e.g. `!LICENSE`    |
+
+The detailed rules (precedence, `!` vs `.gitignore` negation, examples) are in [docs/specs/human-file-format.md](./docs/specs/human-file-format.md).
+Prefer `confirm` for areas you own day-to-day.
+Use `readonly` sparingly for files agents must never touch.
+
+<img src="docs/assets/demo.gif" width="600" height="300" alt="CLI demo: init, check, ls, explain" />
+
 > [!WARNING]
 > This repository is still under active development and is not fully tested yet.
 > Expect breaking changes and rough edges.
 
-`.human` files let you declare where a human stays in the loop, using familiar `.gitignore`-style patterns. Coding agents can move quickly on `free` paths, must ask on `confirm` paths, and must not edit `readonly` paths.
-
-## Why?
+## Why humanfile?
 
 AI coding agents can modify any file in your repository. Without boundaries:
 
@@ -21,21 +36,16 @@ AI coding agents can modify any file in your repository. Without boundaries:
 - Developers lose motivation to invest in manual editing — why bother if AI will just overwrite it?
 - Agents can't tell which files are the source of truth when they see conflicting information
 
-`humanfile` gives you a lightweight policy that prevents the highest-risk changes while keeping delivery speed high:
+**humanfile** gives you a lightweight policy that limits the highest-risk edits while keeping delivery speed high: **`free`** for velocity, **`confirm`** for consent, **`readonly`** for hard stops.
 
-- `free` paths keep shipping velocity high.
-- `confirm` paths force explicit human consent.
-- `readonly` paths block edits to critical files.
+Minimal `.human` example:
 
-```
-# .human — declare where you want to stay in the loop
-
-docs/specs/    # agent should ask before editing
-
-!LICENSE       # agent should not edit (use sparingly)
+```text
+docs/specs/    # confirm — ask before editing specs
+!LICENSE       # readonly — do not edit (use sparingly)
 ```
 
-`humanfile` enforces this with three layers of defense:
+## How it shows up in your repo
 
 ```
                     .human
@@ -43,46 +53,45 @@ docs/specs/    # agent should ask before editing
           ┌────────────┼────────────┐
           ▼            ▼            ▼
      🤖 Agent       🪝 Git         ⚙️ CI
-     Guidance       Hooks         Action
+     guidance       hooks         Action
 
-  Agents check    Commits are     PRs flag
-  before editing  blocked locally violations
+  check before   optional blocks  PR feedback
+  editing        on commit/push   in CI
 ```
+
+- **Agent guidance:** `humanfile install` drops instructions for Cursor, Copilot, Claude Code, and other tools (see table below).
+- **Git hooks:** `humanfile guard install` runs checks on staged files or on push (optional).
+- **CI:** the published GitHub Action comments on PRs and can fail when `readonly` rules are broken (optional).
 
 ## Quick Start
 
-### 1. Create a .human file
+Requires **Node.js 20+** for `npx humanfile`.
+
+### 1. Create a `.human` file
 
 ```bash
 npx humanfile init
 ```
 
-This creates a starter `.human` policy file in your project root so protection rules can be evaluated.
+This writes a starter `.human` in the project root.
+You can also author `.human` by hand.
 
-Or create one manually:
-
-```text
-docs/specs/
-!LICENSE
-```
-
-### 2. Check protection levels
+### 2. See effective levels
 
 ```bash
 npx humanfile check
 ```
 
-This prints each matched file with its effective protection level so you can verify your patterns before using them in agent workflows.
+Lists classified files and a short summary so you can sanity-check patterns before relying on agents or CI.
 
-### 3. Install guidance for your AI tool
+### 3. Install agent guidance
 
 ```bash
 npx humanfile install
 ```
 
-This writes environment-specific instruction/config files (for example, Copilot or Cursor guidance files) so your agent can follow `.human` boundaries during edits.
-
-Common explicit targets:
+Writes editor- or platform-specific instructions so agents know your boundaries.
+You may target one environment explicitly with:
 
 ```bash
 npx humanfile install --env cursor
@@ -93,7 +102,10 @@ npx humanfile install --env cline
 npx humanfile install --env codex
 ```
 
-### 4. Enforce in CI (recommended)
+### 4. Enforce on pull requests (recommended)
+
+The GitHub action is published from this monorepo repo.
+Reference it by **tag** (for example `action-v0.1.3`) and **subpath** `packages/action`:
 
 ```yaml
 name: humanfile
@@ -112,54 +124,45 @@ jobs:
           fail-on-readonly: true
 ```
 
-After this workflow is enabled, pull requests are automatically checked and flagged (or failed, based on your settings) when changes violate your configured boundaries.
+Action setup details: [packages/action/README.md](./packages/action/README.md) and [docs/specs/action-spec.md](./docs/specs/action-spec.md).
 
-Action setup details: [packages/action/README.md](./packages/action/README.md)
-
-## Protection Levels
-
-| Level    | Syntax    | Agent behavior                  |
-| -------- | --------- | ------------------------------- |
-| free     | unmatched | Agent edits without restriction |
-| confirm  | pattern   | Agent asks for permission first |
-| readonly | !pattern  | Agent cannot edit               |
-
-Tip: Use confirm by default, and reserve readonly for files that should always require human control.
-
-## Most Used CLI Commands
+## Common CLI commands
 
 ```bash
 npx humanfile check
-npx humanfile explain src/index.ts
+npx humanfile explain path/to/file    # provenance for one path (add --non-matching / -n for free paths)
+npx humanfile ls
 npx humanfile install
 npx humanfile guard install --hook both --mode staged
 npx humanfile guard install --hook both --mode diff --policy ai-aware --ai-threshold 1200
 npx humanfile guard status
-npx humanfile ls
 ```
 
-Full command/flag reference: [docs/specs/cli-spec.md](./docs/specs/cli-spec.md)
+Full CLI contract: [docs/specs/cli-spec.md](./docs/specs/cli-spec.md).
 
-## Installable Config Targets
+## `humanfile install` targets
 
-The Config column shows destination paths written by humanfile install.
-
-| Platform       | Config                          |
-| -------------- | ------------------------------- |
-| Cursor         | .cursor/rules/humanfile.mdc     |
-| GitHub Copilot | .github/copilot-instructions.md |
-| Claude Code    | CLAUDE.md                       |
-| Windsurf       | .windsurfrules                  |
-| Cline          | .clinerules                     |
-| Codex          | AGENTS.md                       |
+| Platform       | Path written by `install`         |
+| -------------- | --------------------------------- |
+| Cursor         | `.cursor/rules/humanfile.mdc`     |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| Claude Code    | `CLAUDE.md`                       |
+| Windsurf       | `.windsurfrules`                  |
+| Cline          | `.clinerules`                     |
+| Codex          | `AGENTS.md`                       |
 
 ## Library API
 
-If you want to integrate humanfile into custom tooling, see API docs: [packages/core/README.md](./packages/core/README.md).
+To depend on the **humanfile** package from TypeScript or Node: [packages/core/README.md](./packages/core/README.md) and [docs/specs/core-library-api-spec.md](./docs/specs/core-library-api-spec.md).
 
-## Learn More
+## Learn more
 
-- Specifications: [docs/SPECS.md](./docs/SPECS.md)
-- Architecture and internals: [ARCHITECTURE.md](./ARCHITECTURE.md)
-- Contributor guide: [CONTRIBUTING.md](./CONTRIBUTING.md)
-- Agent entrypoint for this repo: [AGENTS.md](./AGENTS.md)
+| Doc                                                                                                    | What it's for                                     |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| [docs/SPECS.md](./docs/SPECS.md)                                                                       | Index of product specs                            |
+| [docs/specs/human-file-format.md](./docs/specs/human-file-format.md)                                   | `.human` syntax and semantics                     |
+| [docs/specs/editor-modes-and-expected-behavior.md](./docs/specs/editor-modes-and-expected-behavior.md) | How editor modes relate to `confirm` / `readonly` |
+| [docs/DESIGN.md](./docs/DESIGN.md)                                                                     | Design philosophy                                 |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                                                                   | Monorepo layout                                   |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)                                                                   | Contributing                                      |
+| [AGENTS.md](./AGENTS.md)                                                                               | Map for AI agents working in this repo            |
