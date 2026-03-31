@@ -8,7 +8,6 @@ Plan conventions and naming rules: [plans/README.md](./plans/README.md).
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
 | [feat-inline-source-annotations](./plans/active/feat-inline-source-annotations.md)                     | Optional inline function-level ownership annotations layered on `.human` rules |
 | [feat-ide-protection-visibility-extension](./plans/active/feat-ide-protection-visibility-extension.md) | IDE visual indicators for free/confirm/readonly protection levels              |
-| [chore-humanfile-dogfood-workflow](./plans/active/chore-humanfile-dogfood-workflow.md)                | Add a dogfood CI workflow that runs humanfile against this repo itself         |
 | [chore-drop-windsurf-cline-support](./plans/active/chore-drop-windsurf-cline-support.md)              | Remove Windsurf and Cline as first-class supported editors                     |
 | [test-editor-modes-programmatic-compliance](./plans/active/test-editor-modes-programmatic-compliance.md) | Programmatic editor-mode compliance framework (contracts + runtime adapters) |
 
