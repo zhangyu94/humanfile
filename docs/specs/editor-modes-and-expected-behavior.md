@@ -25,20 +25,20 @@ The following rules are mandatory across all editor modes:
 2. `confirm` files must require explicit approval before the agent edits.
 3. `free` files may be edited without `.human`-specific confirmation.
 4. For interactive runs, approval is per-edit human confirmation.
-5. For fully autonomous runs, entering autonomous mode is treated as session-level approval for `confirm` edits.
+5. For fully autonomous runs that expose an explicit autonomy toggle (for example, Copilot Autopilot, Codex `--full-auto`), entering that mode is treated as session-level approval for `confirm` edits.
 6. If no approved mechanism applies, `confirm` files must not be edited.
 
-Rationale: editor modes change interaction flow and tool approvals. humanfile keeps stable protection levels while allowing two explicit approval mechanisms (interactive confirmation or autonomous session consent).
+Rationale: editor modes change interaction flow and tool approvals. humanfile keeps stable protection levels while allowing two explicit approval mechanisms (interactive confirmation or, **for modes that explicitly opt into autonomy**, session-level consent).
 
 ## Approval Models
 
 humanfile recognizes two valid ways to satisfy `confirm` approval:
 
-1. Interactive approval
+1. **Interactive approval (per-edit)**
     - The agent asks before a `confirm` edit.
-    - User response gates the write.
-2. Autonomous session consent
-    - User explicitly selects a fully autonomous mode for the session.
+    - The user’s response gates the write.
+2. **Autonomous session consent (for explicit autonomous modes only)**
+    - The user explicitly selects a fully autonomous mode for the session (for example, Copilot Autopilot, Codex `--full-auto`).
     - This session-level action authorizes `confirm` edits for that run.
 
 Safety notes:
@@ -46,6 +46,7 @@ Safety notes:
 - Session-level consent for `confirm` does not apply to `readonly` files.
 - Implementations should expose clear audit signals when a `confirm` edit happened under autonomous consent.
 - Implementations may provide a stricter option that still requires per-edit confirmation in autonomous mode.
+- Some editors (for example, **Cursor Agent mode**) are *always* treated as interactive and must use model 1; they are never considered fully autonomous for the purposes of this spec (see "Cursor Agent Mode Classification" below).
 
 ## Protection Semantics
 

@@ -1,9 +1,5 @@
-# Generated manual QA suite (ignore by default)
-humanfile-ide-qa-suite/
-
-# Allow versioning the QA results report only
-!humanfile-ide-qa-suite/
-humanfile-ide-qa-suite/*
-!humanfile-ide-qa-suite/instructions/
-humanfile-ide-qa-suite/instructions/*
-!humanfile-ide-qa-suite/instructions/results.md
+# humanfile IDE QA suite
+#
+# Version the suite code + fixtures, but ignore generated runtime artifacts.
+humanfile-ide-qa-suite/editors/*/results/**
+!humanfile-ide-qa-suite/editors/*/results/README.md

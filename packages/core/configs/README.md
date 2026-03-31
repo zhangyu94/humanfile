@@ -6,11 +6,13 @@ Ready-to-copy configuration files for teaching AI coding agents to respect `.hum
 
 All config files (except `humanfile.mdc`) are generated from `_source.md`.
 The skill template is sourced from `skills/humanfile/SKILL.md`.
-After editing sources, run:
+After editing sources, run (from the repo root or this directory):
 
 ```bash
 pnpm --filter humanfile configs:build
 ```
+
+The `--filter humanfile` flag makes the command safe to run from the monorepo root by targeting only the `humanfile` package. If you are already inside the `packages/core` directory, running `pnpm configs:build` without the filter is equivalent as long as no other package defines the same script.
 
 This regenerates files in the `generated/` subdirectory in the following table.
 Do not edit generated files directly.

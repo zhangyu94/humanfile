@@ -21,7 +21,7 @@ The tape targets **1200×600** terminal pixels (font **18**, padding **16**) so 
 All of this runs on your machine or in CI; nothing is hand-captured.
 
 1. **Node.js** — `npx` must work (the tape runs `npx humanfile …` inside a fresh temp repo, so the published package is exercised like a real user).
-2. **VHS** — installs `ttyd` and `ffmpeg` on macOS when using Homebrew:
+2. **VHS** — used to run the tape:
 
    ```bash
    brew install vhs
@@ -52,8 +52,6 @@ VHS reads `Output` lines inside the tape and writes:
 - `cli-demo.gif`
 - `cli-demo.mp4`
 
-No other manual steps are required.
-
 ### Verify dimensions and size
 
 On macOS:
@@ -65,34 +63,13 @@ sips -g pixelWidth -g pixelHeight cli-demo.gif
 
 Keep an eye on file size for the README (aim for a few hundred KB; large GIFs hurt load time).
 
-## How the cassette works (short)
+## What the tape records
 
 - **`Hide` / `Show`:** Creates a disposable git repo under `$TMPDIR`, adds minimal files (`src/`, `docs/specs/`, `LICENSE`, etc.), commits, then `clear` so the visible recording starts cleanly with `ls`.
 - **Visible scenes:** `ls` → `npx humanfile init` → `check` → `ls` (rules) → `check src/index.ts` → three `explain` invocations (confirm, readonly, free via `-n`).
 - **`Wait+Screen` vs `Sleep`:** Some steps wait for stable text; `explain` uses **fixed `Sleep`** because colored `level:` output breaks plain-text `Wait` regexes and `npx` can be slow under `ttyd`.
 
 Edit **`demo.tape`** to change resolution, font, timing, or commands. **Settings** (`Set Width`, `Set Height`, `Set FontSize`, …) must appear **before** interactive commands in the tape.
-
-## Automation (CI) sketch
-
-You can regenerate in GitHub Actions when `demo.tape` or CLI output changes, then fail if `git diff` shows a stale GIF (or commit from a release bot). Outline:
-
-1. `ubuntu-latest` job with Node 20+.
-2. Install VHS per [project docs](https://github.com/charmbracelet/vhs) (Linux packages or `go install` + install `ttyd` + `ffmpeg`).
-3. Install a monospace font and reference it in the tape, or switch the tape to a font available on runners.
-4. `vhs cli-demo.tape`
-5. `git diff --exit-code cli-demo.gif` (or commit).
-
-The humanfile maintainers currently re-run VHS **locally** so JetBrains Mono and macOS `zsh` match the checked-in asset; CI is optional.
-
-## Troubleshooting
-
-| Symptom                                    | What to try                                                                                            |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `could not open ttyd` / connection refused | Often transient; re-run. On Linux headless servers, ensure VHS/ttyd can bind localhost.                |
-| `timeout waiting for "Screen …"`           | Output text changed; update the `Wait+Screen /regex/` in `demo.tape` or replace with a longer `Sleep`. |
-| Wrong or fallback font                     | Install JetBrains Mono (see above), or change `Set FontFamily` in `demo.tape`.                         |
-| GIF too large                              | Lower `Set Framerate`, shorten `Sleep` durations, or reduce terminal size slightly.                    |
 
 ## Docker alternative
 
@@ -103,4 +80,3 @@ docker run --rm -v "$PWD:/vhs" -w /vhs ghcr.io/charmbracelet/vhs:latest cli-demo
 ```
 
 The working directory inside the container is the repo root (`-w /vhs`), so `Output docs/assets/...` paths in the tape resolve like a local run.
-

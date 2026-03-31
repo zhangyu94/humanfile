@@ -1,0 +1,3 @@
+# Guide
+
+Protected docs content.

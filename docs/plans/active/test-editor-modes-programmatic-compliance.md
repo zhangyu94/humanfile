@@ -124,6 +124,13 @@ This section defines the contributor-facing contract so local runtime checks are
    - Update QA instructions to point to programmatic runner and evidence files.
    - Keep manual QA as fallback until adapter coverage is acceptable.
 
+## Editor-Specific Runtime Adapter Plans
+
+This plan defines the shared, cross-editor framework. Editor-specific runtime automation plans are tracked separately:
+
+- Cursor via Cursor CLI: `docs/plans/completed/20260331-test-editor-modes-cursor-programmatic-compliance.md`
+- GitHub Copilot via Copilot CLI: `docs/plans/completed/20260331-test-editor-modes-copilot-programmatic-compliance.md`
+
 ## Validation
 
 - For every editor supported by `humanfile install`, deterministic tests prove matrix coverage and invariant conformance.
