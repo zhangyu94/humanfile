@@ -1,5 +1,5 @@
-Output docs/assets/demo.gif
-Output docs/assets/demo.mp4
+Output docs/assets/cli-demo/cli-demo.gif
+Output docs/assets/cli-demo/cli-demo.mp4
 
 Require npx
 
@@ -74,3 +74,4 @@ Sleep 5s
 Type "npx humanfile explain -n src/index.ts"
 Enter
 Sleep 4s
+

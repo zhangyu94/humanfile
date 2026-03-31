@@ -21,8 +21,6 @@ The detailed rules (precedence, `!` vs `.gitignore` negation, examples) are in [
 Prefer `confirm` for areas you own day-to-day.
 Use `readonly` sparingly for files agents must never touch.
 
-<img src="docs/assets/demo.gif" width="600" height="300" alt="CLI demo: init, check, ls, explain" />
-
 > [!WARNING]
 > This repository is still under active development and is not fully tested yet.
 > Expect breaking changes and rough edges.
@@ -84,6 +82,10 @@ npx humanfile check
 
 Lists classified files and a short summary so you can sanity-check patterns before relying on agents or CI.
 
+Example CLI run (init → check → ls → explain):
+
+<img src="docs/assets/cli-demo/cli-demo.gif" width="600" height="300" alt="CLI demo: init, check, ls, explain" />
+
 ### 3. Install agent guidance
 
 ```bash
@@ -125,6 +127,10 @@ jobs:
 ```
 
 Action setup details: [packages/action/README.md](./packages/action/README.md) and [docs/specs/action-spec.md](./docs/specs/action-spec.md).
+
+Example PR run (GitHub Action CI):
+
+<img src="docs/assets/action-demo/action-demo.gif" width="600" height="300" alt="GitHub Action demo: failing check and PR comment" />
 
 ## Common CLI commands
 

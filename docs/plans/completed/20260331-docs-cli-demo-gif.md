@@ -14,13 +14,13 @@ completed: "20260331"
 ## Context
 
 - Terminal GIFs are the usual pattern for CLI tools on GitHub.
-- The GitHub Action story belongs in a **separate** asset (see [docs-action-demo-video.md](../active/docs-action-demo-video.md)).
+- The GitHub Action story belongs in a **separate** asset (see `20260331-docs-action-demo-video.md` for the action demo plan).
 
 ## Approach
 
-- Tool: **[VHS](https://github.com/charmbracelet/vhs)** — scripted recording from `docs/assets/demo.tape`.
+- Tool: **[VHS](https://github.com/charmbracelet/vhs)** — scripted recording from `docs/assets/cli-demo/cli-demo.tape`.
 - **Hidden setup** (`Hide` / `Show`): create a minimal git repo under a temp directory, then `clear`, so on-screen history starts at `ls`.
-- **Outputs:** `docs/assets/demo.gif` (README), `docs/assets/demo.mp4` (optional embed elsewhere).
+- **Outputs:** `docs/assets/cli-demo/cli-demo.gif` (README), `docs/assets/cli-demo/cli-demo.mp4` (optional embed elsewhere).
 
 ## Font and production spec (current)
 
@@ -60,21 +60,21 @@ Fixture omits `README.md` so `init` produces a small `.human` (e.g. `docs/specs/
 
 ## Deliverables
 
-- `docs/assets/demo.tape`
-- `docs/assets/demo.gif` / `docs/assets/demo.mp4`
-- `docs/assets/README.md` (re-render instructions + font note)
+- `docs/assets/cli-demo/cli-demo.tape`
+- `docs/assets/cli-demo/cli-demo.gif` / `docs/assets/cli-demo/cli-demo.mp4`
+- `docs/assets/cli-demo/README.md` (re-render instructions + font note)
 - `README.md` embed above “Quick Start” (`<img width="600" height="300">`)
 
 ## Outcome (final)
 
-- GIF/MP4 at 1200×600; file sizes depend on length and palette (re-check after re-renders).
+- GIF/MP4 at 1200×600, stored under `docs/assets/cli-demo/`; file sizes depend on length and palette (re-check after re-renders).
 - README alt text describes the broadened CLI demo (`init`, `check`, `ls`, `explain`).
-- Re-render from repo root: `vhs docs/assets/demo.tape`
+- Re-render from repo root: `vhs docs/assets/cli-demo/cli-demo.tape`
 
 ## Steps (historical)
 
 1. [x] Install VHS (`brew install vhs`).
-2. [x] Add `docs/assets/demo.tape` and `docs/assets/README.md`.
+2. [x] Add `docs/assets/cli-demo/cli-demo.tape` and `docs/assets/cli-demo/README.md`.
 3. [x] Install JetBrains Mono; set font in tape.
 4. [x] Expand storyboard; replace brittle `Wait` on colored `explain` output with `Sleep`.
 5. [x] Embed GIF in README; keep `docs/PLANS.md` accurate.
