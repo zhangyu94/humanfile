@@ -2,7 +2,7 @@
 
 This directory is for **manual IDE QA** across multiple editors. It is a complement to the automated Cursor runtime runner in `editors/cursor/`, not a dependency.
 
-- Use `editors/cursor/run.ts` + `qa:editor-modes:cursor` for **automated Cursor checks**.
+- Use `editors/cursor/run.ts` + `qa:editor:cursor` for **automated Cursor checks**.
 - Use these instruction files when you want to **manually exercise other editors** (Copilot, Claude Code, Windsurf, Cline, Codex) or do ad‑hoc exploratory testing.
 
 Files:

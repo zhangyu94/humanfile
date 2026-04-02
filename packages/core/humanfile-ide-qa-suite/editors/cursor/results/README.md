@@ -9,7 +9,7 @@ Prerequisites:
 - Verify with `agent --version`.
 
 ```bash
-pnpm --filter humanfile run qa:editor-modes:cursor
+pnpm --filter humanfile run qa:editor:cursor
 ```
 
 ## How to tell if the run passed

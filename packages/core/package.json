@@ -40,6 +40,7 @@
     "humanfile": "./dist/cli.mjs"
   },
   "files": [
+    "DEVELOPMENT.md",
     "configs/generated",
     "dist"
   ],
@@ -54,8 +55,8 @@
     "configs:check-sync": "tsx configs/check-sync.ts",
     "bench": "tsx test/bench/classify.bench.ts",
     "qa:prepare-suite": "tsx scripts/create-manual-qa-suite.ts",
-    "qa:editor-modes:cursor": "tsx humanfile-ide-qa-suite/editors/cursor/run.ts",
-    "qa:editor-modes:copilot": "tsx humanfile-ide-qa-suite/editors/copilot/run.ts"
+    "qa:editor:cursor": "tsx humanfile-ide-qa-suite/editors/cursor/run.ts",
+    "qa:editor:copilot": "tsx humanfile-ide-qa-suite/editors/copilot/run.ts"
   },
   "dependencies": {
     "@inquirer/prompts": "^8.3.2",

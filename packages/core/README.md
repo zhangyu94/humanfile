@@ -199,109 +199,18 @@ interface ProtectedPolicyEvaluation {
 
 For normative behavior specs, see `../../docs/specs/human-file-format.md` and `../../docs/specs/cli-spec.md`.
 
-## Development
-
-### Script Purpose Reference
-
-- `build`: compile library and CLI outputs into `dist/`.
-- `test`: run unit and integration tests once (pass `--watch` to vitest for watch mode).
-- `configs:build`: regenerate all config templates into `configs/generated/`.
-- `configs:check-sync`: verify `configs/generated/*` is in sync with sources.
-- `bench`: run synthetic classifier performance benchmark (`test/bench/classify.bench.ts`).
-- `qa:prepare-suite`: generate the manual IDE QA suite used for cross-editor acceptance checks.
-
-```bash
-pnpm build
-pnpm test
-pnpm run configs:build
-pnpm bench
-```
-
 ## CLI
 
-How you invoke the CLI depends on context:
+The `humanfile` binary ships with the package. Common commands:
 
 ```bash
-# From repository root (workspace script)
-pnpm humanfile check
-
-# From packages/core (local dev script)
-pnpm run humanfile check
-
-# After package install (global/bin resolution)
-humanfile check
-```
-
-```bash
-humanfile check
-humanfile explain src/index.ts
-humanfile explain --verbose src/index.ts
+humanfile check <path>
+humanfile explain <path>
 humanfile init
 humanfile install
-humanfile guard install --hook pre-commit --mode staged
-humanfile guard status
 humanfile ls
 ```
 
-`install` auto-detects a primary editor environment and installs the matching config from `configs/generated/`.
+For every subcommand, flag, and JSON output shape, see [`../../docs/specs/cli-spec.md`](../../docs/specs/cli-spec.md).
 
-`explain` is inspired by `git check-ignore`: it reports match provenance and can be used in path-focused debugging workflows.
-
-For full command/flag semantics, see `../../docs/specs/cli-spec.md`.
-
-Useful install flags:
-
-```bash
-# Explicit primary environment
-humanfile install --env cursor
-
-# Add extra environments without interactive prompt
-humanfile install --env cursor --with copilot,claude
-
-# Disable prompt (CI/scripts)
-humanfile install --no-prompt
-
-# Preview without writing files
-humanfile install --dry-run
-
-# Also install .agents skill template
-humanfile install --with-skill
-```
-
-Local guard setup:
-
-```bash
-# Install a pre-commit guard that checks staged files
-humanfile guard install --hook pre-commit --mode staged
-
-# Install both pre-commit and pre-push hooks
-humanfile guard install --hook both --mode diff
-
-# Install ai-aware policy (blocks only likely AI-generated protected edits)
-humanfile guard install --hook both --mode diff --policy ai-aware --ai-threshold 1200
-
-# Inspect guard status
-humanfile guard status
-
-# Uninstall only humanfile-managed hooks
-humanfile guard uninstall --hook both
-```
-
-Guard policies:
-
-- `strict`: block whenever protected files are changed.
-- `ai-aware` (default): block only when protected files are changed and the AI heuristic is triggered.
-
-When a guard blocks a change, it prints violating files and suggests `humanfile explain <path>` for rule provenance.
-
-## Implementation Notes
-
-### What `test/fixtures/classify-all/` is used for
-
-`test/fixtures/classify-all/` provides real directory trees for integration tests. These fixtures exercise parser, loader, and classifier behavior together, including nested `.human` scoping, precedence, and whitespace parsing.
-
-### Generated Config Policy
-
-`configs/generated/` is intentionally committed and should not be gitignored.
-This keeps CLI installs deterministic for end users and allows CI to verify
-template drift with `configs:check-sync`.
+**Developing this package** (build/test scripts, editor QA harnesses, running the CLI from the monorepo, guard hooks): see [DEVELOPMENT.md](./DEVELOPMENT.md).

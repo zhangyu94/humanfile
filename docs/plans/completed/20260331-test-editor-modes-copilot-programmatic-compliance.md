@@ -57,7 +57,7 @@ For each scenario, capture:
 - Run locally with:
 
 ```bash
-pnpm --filter humanfile run qa:editor-modes:copilot
+pnpm --filter humanfile run qa:editor:copilot
 ```
 
 - Keep deterministic contract checks in the shared plan (`test-editor-modes-programmatic-compliance.md`) as CI gates; Copilot runtime adapter remains local-only.
