@@ -1,7 +1,7 @@
 {
   "name": "humanfile",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Parse .human files and classify file protection levels for AI coding agents",
   "author": "Yu Zhang",
   "license": "MIT",
