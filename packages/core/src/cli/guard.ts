@@ -680,8 +680,7 @@ export const guardCommand = defineCommand({
 
         console.log('humanfile guard blocked protected-file changes:')
         for (const violation of checkResult.violations) {
-          const sourceInfo = violation.sourceFile ? ` (source: ${violation.sourceFile})` : ''
-          console.log(`- ${violation.path} -> ${violation.level}${sourceInfo}`)
+          console.log(`- ${violation.path} -> ${violation.level}`)
         }
         console.log('')
         const first = checkResult.violations[0]

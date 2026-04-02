@@ -367,7 +367,6 @@ export const installCommand = defineCommand({
       }
 
       console.log(pc.green(`Installed config for ${target.label} ${modeLabel}`.trim()))
-      console.log(pc.dim(`  source: ${result.sourcePath}`))
       console.log(pc.dim(`  target: ${target.destinationPath}`))
     }
 
@@ -384,7 +383,6 @@ export const installCommand = defineCommand({
       }
       else {
         console.log(pc.green(`Installed Skill template ${modeLabel}`.trim()))
-        console.log(pc.dim(`  source: ${result.sourcePath}`))
         console.log(pc.dim(`  target: ${result.destinationPath}`))
       }
     }

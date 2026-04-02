@@ -1,5 +1,5 @@
-Output docs/assets/action-demo/action-demo.gif
-Output docs/assets/action-demo/action-demo.mp4
+Output action-demo.gif
+Output action-demo.mp4
 
 Require gh
 

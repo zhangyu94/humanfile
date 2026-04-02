@@ -65,30 +65,29 @@ docs/specs/    # confirm — ask before editing specs
 
 Requires **Node.js 20+** for `npx humanfile`.
 
+If you run these commands a lot, you can install the CLI once so `humanfile ...` works as a global command:
+
+```bash
+# install the humanfile CLI globally (enables `humanfile ...`)
+npm i -g humanfile
+```
+
+If you **don't** want a global install, keep using `npx humanfile ...` (or `pnpx humanfile ...` if using pnpm).
+
 ### 1. Create a `.human` file
 
 ```bash
+# create a starter .human in the repo root
 npx humanfile init
 ```
 
 This writes a starter `.human` in the project root.
 You can also author `.human` by hand.
 
-### 2. See effective levels
+### 2. Install agent guidance
 
 ```bash
-npx humanfile check
-```
-
-Lists classified files and a short summary so you can sanity-check patterns before relying on agents or CI.
-
-Example CLI run (init → check → ls → explain):
-
-<img src="docs/assets/cli-demo/cli-demo.gif" width="600" height="300" alt="CLI demo: init, check, ls, explain" />
-
-### 3. Install agent guidance
-
-```bash
+# write agent/editor guidance files (auto-detect environment)
 npx humanfile install
 ```
 
@@ -96,15 +95,35 @@ Writes editor- or platform-specific instructions so agents know your boundaries.
 You may target one environment explicitly with:
 
 ```bash
-npx humanfile install --env cursor
-npx humanfile install --env copilot
-npx humanfile install --env claude
-npx humanfile install --env windsurf
-npx humanfile install --env cline
-npx humanfile install --env codex
+npx humanfile install --env cursor   # Cursor (.cursor/rules/humanfile.mdc)
+npx humanfile install --env copilot  # GitHub Copilot (.github/copilot-instructions.md)
+npx humanfile install --env claude   # Claude Code (CLAUDE.md)
+npx humanfile install --env windsurf # Windsurf (.windsurfrules)
+npx humanfile install --env cline    # Cline (.clinerules)
+npx humanfile install --env codex    # Codex (AGENTS.md)
 ```
 
-### 4. Enforce on pull requests (recommended)
+Install walkthrough (Cursor, non-interactive):
+
+<img src="docs/assets/install-demo/install-demo.gif" width="600" height="200" alt="CLI demo: humanfile install for Cursor and listing .cursor/rules" />
+
+### 3. (Optional) Git hooks
+
+```bash
+# install a pre-commit hook that checks staged files
+npx humanfile guard install --hook pre-commit --mode staged
+```
+
+Run this from **any directory inside your git checkout** (including monorepo package folders). The CLI resolves the repository root and writes hooks under `<repo>/.git/hooks`.
+
+Optional local enforcement before commits or pushes.
+See [docs/specs/cli-spec.md](./docs/specs/cli-spec.md) and [packages/core/DEVELOPMENT.md](./packages/core/DEVELOPMENT.md) for hooks, modes, and policies.
+
+Guard walkthrough:
+
+<img src="docs/assets/guard-demo/guard-demo.gif" width="600" height="200" alt="CLI demo: humanfile guard install and guard status" />
+
+### 4. (Optional) Enforce on pull requests
 
 The GitHub action is published from this monorepo repo.
 Reference it by **tag** (for example `action-v0.1.3`) and **subpath** `packages/action`:
@@ -134,13 +153,31 @@ Example PR run (GitHub Action CI):
 
 ## Common CLI commands
 
+**Effective levels:**
+`humanfile check` classifies the whole tree or a single path so you can sanity-check patterns before relying on agents or CI.
+`humanfile ls` lists discovered `.human` files.
+`humanfile explain` shows provenance for one path (add `--non-matching` / `-n` for `free` paths).
+
 ```bash
-npx humanfile check
-npx humanfile explain path/to/file    # provenance for one path (add --non-matching / -n for free paths)
-npx humanfile ls
-npx humanfile install
+npx humanfile check                         # classify the whole tree (effective levels)
+npx humanfile check path/to/file            # classify a single path
+npx humanfile ls                            # list discovered .human files
+npx humanfile explain path/to/file          # show why a path is confirm/readonly
+npx humanfile explain -n path/to/free-file  # show why a path is free (non-matching)
+```
+
+Classification walkthrough (`check`, `ls`, `explain`):
+
+<img src="docs/assets/cli-demo/cli-demo.gif" width="600" height="200" alt="CLI demo: humanfile check, ls, and explain for confirm, readonly, and free paths" />
+
+**Guards** (optional; see Quick Start step 3):
+
+```bash
+# install pre-commit + pre-push (staged mode)
 npx humanfile guard install --hook both --mode staged
+# ai-aware diff policy tuned for large PRs
 npx humanfile guard install --hook both --mode diff --policy ai-aware --ai-threshold 1200
+# show which hooks are installed
 npx humanfile guard status
 ```
 
