@@ -40,6 +40,7 @@ Placement rule:
 - **Monorepo layout:** `packages/core` (lib + CLI + configs), `packages/action`
 - **Tests:** Vitest — run `pnpm test` from root or any package
 - **Build:** tsdown — run `pnpm build` from root or any package
+- **Cross-platform:** The implementation is expected to work and to be tested on MacOS/Linux/Windows
 
 ## .human File Format
 

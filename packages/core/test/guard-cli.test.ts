@@ -1,4 +1,4 @@
-import { existsSync, realpathSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -13,6 +13,14 @@ import {
 } from '../src/cli/guard.js'
 
 const tempDirs: string[] = []
+
+/** Same file identity even when path strings differ. */
+function expectSameFilesystemFile(a: string, b: string): void {
+  const sa = statSync(a)
+  const sb = statSync(b)
+  expect(sa.ino).toBe(sb.ino)
+  expect(sa.dev).toBe(sb.dev)
+}
 
 async function makeTempDir(): Promise<string> {
   const dir = await mkdtemp(join(tmpdir(), 'humanfile-guard-test-'))
@@ -351,8 +359,9 @@ describe('guard hook edge cases', () => {
       dryRun: false,
     })
 
-    expect(realpathSync(install.path)).toBe(realpathSync(resolve(repo, '.git', 'hooks', 'pre-commit')))
+    const expectedHook = resolve(repo, '.git', 'hooks', 'pre-commit')
     expect(existsSync(install.path)).toBe(true)
+    expectSameFilesystemFile(install.path, expectedHook)
 
     const statuses = await readGuardStatus(nested)
     expect(statuses.find(s => s.hook === 'pre-commit')?.installed).toBe(true)
