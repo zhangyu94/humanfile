@@ -201,7 +201,7 @@ Export or copy the full agent transcript for these scenarios into:
   ]
 
   let log = `# Cursor CLI runtime evidence\n\nworkspace: ${workspace}\n\n`
-  const scenarioOutputs: Record<string, { stdout: string, stderr: string }> = {}
+  const scenarioOutputs: Record<string, { ok: boolean, stdout: string, stderr: string }> = {}
   for (const scenario of scenarios) {
     const out = runCursorCliAgent(scenario.prompt, workspace)
     scenarioOutputs[scenario.id] = out
@@ -221,6 +221,27 @@ Export or copy the full agent transcript for these scenarios into:
     (r): ComplianceReport['results'][number] => {
       const out = scenarioOutputs[r.scenarioId]
       const agentReply = out?.stdout?.trim()
+      const ok = out?.ok ?? false
+      const stderr = out?.stderr?.trim() ?? ''
+
+      if (!ok) {
+        // If the agent command didn't run successfully, we cannot treat "file unchanged"
+        // as evidence of correct confirm/readonly behavior.
+        const lower = stderr.toLowerCase()
+        const looksUnsupported = lower.includes('out of usage')
+          || lower.includes('not authenticated')
+          || lower.includes('auth')
+
+        return {
+          ...r,
+          status: looksUnsupported ? 'unsupported' : 'fail',
+          observed: stderr
+            ? `Agent command failed: ${stderr}`
+            : 'Agent command failed (non-zero exit) with no stderr.',
+          evidence: cliLogPath,
+          agentReply,
+        }
+      }
 
       if (r.scenarioId === 'cursor.agent.free-edit') {
         return {
