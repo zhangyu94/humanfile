@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { chmod, readFile, rm, writeFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { chmod, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
 import { defineCommand } from 'citty'
 import pc from 'picocolors'
 import { explain } from '../classifier'
@@ -78,8 +78,27 @@ export function isGuardPolicy(value: string): value is GuardPolicy {
   return value === 'strict' || value === 'ai-aware'
 }
 
-function hookPath(cwd: string, hook: GuardHook): string {
-  return resolve(cwd, '.git', 'hooks', hook)
+function hookPath(repoRoot: string, hook: GuardHook): string {
+  return resolve(repoRoot, '.git', 'hooks', hook)
+}
+
+function resolveGitRepositoryRoot(startDir: string): string {
+  const result = spawnSync('git', ['rev-parse', '--show-toplevel'], {
+    cwd: startDir,
+    encoding: 'utf8',
+  })
+  if (result.status !== 0) {
+    const detail = (result.stderr || result.stdout || '').trim()
+    throw new TypeError(
+      detail
+        ? `Not a git repository: ${detail}`
+        : 'Not a git repository. Run from a git checkout (any subdirectory is fine) so hooks can be written under .git/hooks.',
+    )
+  }
+  const root = result.stdout.trim()
+  if (!root)
+    throw new TypeError('Could not resolve git repository root.')
+  return root
 }
 
 function parseGuardHeader(content: string): { managed: boolean, mode: GuardMode | null, policy: GuardPolicy | null, aiThreshold: number | null } {
@@ -145,7 +164,8 @@ export async function installGuardHook(options: {
 }): Promise<HookInstallResult> {
   const policy = options.policy ?? DEFAULT_GUARD_POLICY
   const aiThreshold = options.aiThreshold ?? DEFAULT_AI_THRESHOLD
-  const path = hookPath(options.cwd, options.hook)
+  const repoRoot = resolveGitRepositoryRoot(options.cwd)
+  const path = hookPath(repoRoot, options.hook)
   if (existsSync(path)) {
     const existing = await readFile(path, 'utf8')
     const current = parseGuardHeader(existing)
@@ -164,6 +184,7 @@ export async function installGuardHook(options: {
   }
 
   if (!options.dryRun) {
+    await mkdir(dirname(path), { recursive: true })
     await writeFile(path, buildGuardHookScript(options.hook, options.mode, policy, aiThreshold), 'utf8')
     await chmod(path, 0o755)
   }
@@ -176,7 +197,8 @@ export async function uninstallGuardHook(options: {
   hook: GuardHook
   dryRun: boolean
 }): Promise<HookUninstallResult> {
-  const path = hookPath(options.cwd, options.hook)
+  const repoRoot = resolveGitRepositoryRoot(options.cwd)
+  const path = hookPath(repoRoot, options.hook)
   if (!existsSync(path)) {
     return { hook: options.hook, path, removed: false, skippedReason: 'missing' }
   }
@@ -195,11 +217,31 @@ export async function uninstallGuardHook(options: {
 }
 
 export async function readGuardStatus(cwd: string): Promise<HookStatus[]> {
+  let repoRoot: string
+  try {
+    repoRoot = resolveGitRepositoryRoot(cwd)
+  }
+  catch {
+    const hooks: GuardHook[] = ['pre-commit', 'pre-push']
+    return hooks.map((hook) => {
+      const path = hookPath(cwd, hook)
+      return {
+        hook,
+        path,
+        installed: false,
+        managedByHumanfile: false,
+        mode: null,
+        policy: null,
+        aiThreshold: null,
+      }
+    })
+  }
+
   const hooks: GuardHook[] = ['pre-commit', 'pre-push']
   const statuses: HookStatus[] = []
 
   for (const hook of hooks) {
-    const path = hookPath(cwd, hook)
+    const path = hookPath(repoRoot, hook)
     if (!existsSync(path)) {
       statuses.push({
         hook,

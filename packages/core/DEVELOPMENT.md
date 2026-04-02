@@ -111,6 +111,9 @@ humanfile install --with-skill
 
 ### Local guard setup
 
+Commands resolve the git repository root (`git rev-parse --show-toplevel`), so you can run them from a monorepo subdirectory.
+Hooks are always written under the real repo's `.git/hooks`.
+
 ```bash
 # Install a pre-commit guard that checks staged files
 humanfile guard install --hook pre-commit --mode staged

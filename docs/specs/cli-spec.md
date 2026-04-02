@@ -208,6 +208,7 @@ Internal execution subcommand:
 
 ### install/uninstall safety behavior
 
+- `install`, `uninstall`, and `status` resolve the git repository root with `git rev-parse --show-toplevel` from the process working directory, so running from a subdirectory (for example `packages/my-app` in a monorepo) still installs hooks at the true repo root’s `.git/hooks`. If the cwd is not inside a git checkout, install/uninstall fail with a clear error and `status` reports hooks as missing.
 - Install writes a sentinel-tagged script and executable permissions.
 - Install refuses to overwrite non-humanfile hooks unless `--force` is set.
 - Install skips writing when an existing humanfile-managed hook already has the same mode, policy, and ai-threshold. Use `--force` to reinstall regardless.

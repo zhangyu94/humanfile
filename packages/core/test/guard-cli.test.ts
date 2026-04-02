@@ -1,3 +1,4 @@
+import { existsSync, realpathSync } from 'node:fs'
 import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -334,5 +335,26 @@ describe('guard hook edge cases', () => {
     const statuses = await readGuardStatus(repo)
     const preCommit = statuses.find(s => s.hook === 'pre-commit')!
     expect(preCommit.installed).toBe(false)
+  })
+
+  it('install writes hooks at repository root when cwd is a nested directory', async () => {
+    const repo = await makeTempDir()
+    await initRepo(repo)
+    const nested = join(repo, 'packages', 'app')
+    await mkdir(nested, { recursive: true })
+
+    const install = await installGuardHook({
+      cwd: nested,
+      hook: 'pre-commit',
+      mode: 'staged',
+      force: false,
+      dryRun: false,
+    })
+
+    expect(realpathSync(install.path)).toBe(realpathSync(resolve(repo, '.git', 'hooks', 'pre-commit')))
+    expect(existsSync(install.path)).toBe(true)
+
+    const statuses = await readGuardStatus(nested)
+    expect(statuses.find(s => s.hook === 'pre-commit')?.installed).toBe(true)
   })
 })
